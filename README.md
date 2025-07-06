@@ -23,7 +23,7 @@
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/article-service.git
+git clone https://github.com/chandra-phang/article-service
 cd article-service
 ```
 
