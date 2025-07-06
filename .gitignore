@@ -1,0 +1,9 @@
+# secrets
+config.yml
+
+__debug_bin*
+storage/
+
+coverage.out
+
+article-service.exe
