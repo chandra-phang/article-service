@@ -60,6 +60,9 @@ elastic:
 ```
 
 ### 5. Run the application
+When application is run for the first time, it will migrate pending migrations and seed database.
+Application will run on port 3000.
+
 
 ```bash
 go run main.go

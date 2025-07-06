@@ -51,7 +51,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestCreateArticle(t *testing.T) {
-	db_client.RunIntegrationTestSeed(context.Background(), config.DbConfig, "../tests/seed")
+	db_client.RunSeedTest(context.Background(), config.DbConfig)
 
 	dto := v1req.CreateArticleDTO{
 		Title:    "New article title",
@@ -85,7 +85,7 @@ func TestCreateArticle(t *testing.T) {
 }
 
 func TestListArticles_WithNoQuery_ReturnAllRecords(t *testing.T) {
-	db_client.RunIntegrationTestSeed(context.Background(), config.DbConfig, "../tests/seed")
+	db_client.RunSeedTest(context.Background(), config.DbConfig)
 
 	r := httptest.NewRequest(http.MethodPost, "/v1/articles", nil)
 	w := httptest.NewRecorder()
@@ -138,7 +138,7 @@ func TestListArticles_WithNoQuery_ReturnAllRecords(t *testing.T) {
 }
 
 func TestListArticles_WithQuery_ReturnAllRecords(t *testing.T) {
-	db_client.RunIntegrationTestSeed(context.Background(), config.DbConfig, "../tests/seed")
+	db_client.RunSeedTest(context.Background(), config.DbConfig)
 
 	r := httptest.NewRequest(http.MethodPost, "/v1/articles", nil)
 	w := httptest.NewRecorder()
@@ -193,7 +193,7 @@ func TestListArticles_WithQuery_ReturnAllRecords(t *testing.T) {
 }
 
 func TestListArticles_WithQuery_ReturnOneRecord(t *testing.T) {
-	db_client.RunIntegrationTestSeed(context.Background(), config.DbConfig, "../tests/seed")
+	db_client.RunSeedTest(context.Background(), config.DbConfig)
 
 	r := httptest.NewRequest(http.MethodPost, "/v1/articles", nil)
 	w := httptest.NewRecorder()
@@ -238,7 +238,7 @@ func TestListArticles_WithQuery_ReturnOneRecord(t *testing.T) {
 }
 
 func TestListArticles_WithAuthorName_ReturnOneRecord(t *testing.T) {
-	db_client.RunIntegrationTestSeed(context.Background(), config.DbConfig, "../tests/seed")
+	db_client.RunSeedTest(context.Background(), config.DbConfig)
 
 	r := httptest.NewRequest(http.MethodPost, "/v1/articles", nil)
 	w := httptest.NewRecorder()

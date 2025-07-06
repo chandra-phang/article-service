@@ -123,6 +123,8 @@ func RunMigrations(ctx context.Context, config configloader.DbConfig) {
 		}
 	} else {
 		log.Infof(ctx, "[DB_Client] Running migrations done")
+
+		RunSeed(ctx, config, config.DbName)
 	}
 }
 
@@ -224,26 +226,27 @@ func DropTestDB(ctx context.Context, config configloader.DbConfig) error {
 	return nil
 }
 
-func RunIntegrationTestSeed(ctx context.Context, config configloader.DbConfig, dir string) error {
+func RunSeed(ctx context.Context, config configloader.DbConfig, dbName string) error {
 	connInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		config.Host, config.Port, config.User, config.Password, config.TestDbName)
+		config.Host, config.Port, config.User, config.Password, dbName)
 
 	db, err := sql.Open("postgres", connInfo)
 	if err != nil {
-		log.Errorf(ctx, err, "[DB_Client][CreateTestDB] failed to connect to postgres")
+		log.Errorf(ctx, err, "[DB_Client][RunSeed] failed to connect to postgres")
 		return err
 	}
 	defer db.Close()
 
-	absPath, err := filepath.Abs(dir)
-	if err != nil {
-		log.Errorf(ctx, err, "[RunSeedFiles] unable to resolve seed dir")
-		return err
+	basePath, _ := os.Getwd()
+	seedPath := filepath.Join(basePath, "db", "seed")
+
+	if dbName == "article_service_test" {
+		seedPath = filepath.Join(basePath, "..", "db", "seed")
 	}
 
-	files, err := os.ReadDir(absPath)
+	files, err := os.ReadDir(seedPath)
 	if err != nil {
-		log.Errorf(ctx, err, "[RunSeedFiles] unable to read seed files")
+		log.Errorf(ctx, err, "[DB_Client][RunSeed] unable to read seed files")
 		return err
 	}
 
@@ -257,22 +260,26 @@ func RunIntegrationTestSeed(ctx context.Context, config configloader.DbConfig, d
 			continue
 		}
 
-		path := filepath.Join(absPath, file.Name())
+		path := filepath.Join(seedPath, file.Name())
 		sqlContent, err := os.ReadFile(path)
 		if err != nil {
-			log.Errorf(ctx, err, "[RunSeedFiles] error reading %s", file.Name())
+			log.Errorf(ctx, err, "[DB_Client][RunSeed] error reading %s", file.Name())
 			return err
 		}
 
 		if _, err := db.Exec(string(sqlContent)); err != nil {
-			log.Errorf(ctx, err, "[RunSeedFiles] error executing %s", file.Name())
+			log.Errorf(ctx, err, "[DB_Client][RunSeed] error executing %s", file.Name())
 			return err
 		}
 
-		log.Infof(ctx, "Executed seed: %s\n", file.Name())
+		log.Infof(ctx, "[DB_Client][RunSeed] Executed seed: %s", file.Name())
 	}
 
 	return nil
+}
+
+func RunSeedTest(ctx context.Context, config configloader.DbConfig) {
+	RunSeed(ctx, config, config.TestDbName)
 }
 
 func TruncateTestDB(ctx context.Context, config configloader.DbConfig) error {
